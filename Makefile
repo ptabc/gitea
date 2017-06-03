@@ -40,7 +40,7 @@ all: build
 .PHONY: clean
 clean:
 	go clean -i ./...
-	rm -rf $(EXECUTABLE) $(DIST) $(BINDATA)
+	rm -rf $(EXECUTABLE) $(DIST) $(BINDATA) public/css/index.css
 
 .PHONY: fmt
 fmt:
@@ -186,14 +186,18 @@ stylesheets: public/css/index.css
 
 .IGNORE: public/css/index.css
 public/css/index.css: $(STYLESHEETS)
-	lessc $< $@
+	@hash lessc > /dev/null 2>&1; if [ $$? -ne 0 ]; then \
+		docker run --rm -v $(PWD):/app appleboy/node-less $< $@; \
+	else \
+		lessc $< $@; \
+	fi
 
 .PHONY: swagger-ui
 swagger-ui:
-	rm -Rf public/assets/swagger-ui
+	rm -rf public/assets/swagger-ui
 	git clone --depth=10 -b v3.0.7 --single-branch https://github.com/swagger-api/swagger-ui.git /tmp/swagger-ui
 	mv /tmp/swagger-ui/dist public/assets/swagger-ui
-	rm -Rf /tmp/swagger-ui
+	rm -rf /tmp/swagger-ui
 	sed -i "s;http://petstore.swagger.io/v2/swagger.json;../../swagger.v1.json;g" public/assets/swagger-ui/index.html
 
 .PHONY: assets
