@@ -46,3 +46,4 @@ coverage.out
 /log
 /public/img/avatar
 /integrations/gitea-integration
+/public/css/index.css

@@ -8,6 +8,14 @@ pipeline:
     depth: 50
     tags: true
 
+  less:
+    image: appleboy/node-less
+    pull: true
+    commands:
+      - make stylesheets
+    when:
+      event: [ push, tag, pull_request ]
+
   build:
     image: webhippie/golang:edge
     pull: true
