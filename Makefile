@@ -35,7 +35,7 @@ else
 endif
 
 .PHONY: all
-all: build
+all: clean assets generate build
 
 .PHONY: clean
 clean:
@@ -126,7 +126,7 @@ $(EXECUTABLE): $(SOURCES)
 
 .PHONY: docker
 docker:
-	docker run -ti --rm -v $(CURDIR):/srv/app/src/code.gitea.io/gitea -w /srv/app/src/code.gitea.io/gitea -e TAGS="bindata $(TAGS)" webhippie/golang:edge make clean generate build
+	docker run -ti --rm -v $(CURDIR):/srv/app/src/code.gitea.io/gitea -w /srv/app/src/code.gitea.io/gitea -e TAGS="bindata $(TAGS)" webhippie/golang:edge make clean assets generate build
 	docker build -t $(DOCKER_TAG) .
 
 .PHONY: release
@@ -195,9 +195,9 @@ public/css/index.css: $(STYLESHEETS)
 .PHONY: swagger-ui
 swagger-ui:
 	rm -rf public/assets/swagger-ui
-	git clone --depth=10 -b v3.0.7 --single-branch https://github.com/swagger-api/swagger-ui.git /tmp/swagger-ui
-	mv /tmp/swagger-ui/dist public/assets/swagger-ui
-	rm -rf /tmp/swagger-ui
+	git clone --depth=10 -b v3.0.7 --single-branch https://github.com/swagger-api/swagger-ui.git $(TMPDIR)/swagger-ui
+	mv $(TMPDIR)/swagger-ui/dist public/assets/swagger-ui
+	rm -rf $(TMPDIR)/swagger-ui
 	sed -i "s;http://petstore.swagger.io/v2/swagger.json;../../swagger.v1.json;g" public/assets/swagger-ui/index.html
 
 .PHONY: assets
